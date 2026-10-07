@@ -1,0 +1,23 @@
+# One line per command. The runner encodes it as a RESP multibulk request and
+# prints the decoded reply, one line each. `"..."` quotes an argument with
+# spaces; `raw:` (see protocol.txt) puts bytes on the wire verbatim.
+#
+# The server holds all of this in one connection, so this fixture also covers
+# pipelining: every request is written before the first reply is read.
+
+SET k hello
+GET k
+EXISTS k
+GET missing
+EXISTS k missing
+DEL k
+GET k
+EXISTS k
+DEL k
+SET k ""
+GET k
+SET k "a b c"
+GET k
+PING
+PING hi
+QUIT

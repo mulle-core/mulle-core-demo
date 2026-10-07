@@ -1,0 +1,35 @@
+https://example.com/path?q=1#frag
+http://example.com
+http://example.com/
+ftp://files.example.org/pub/
+HTTP://EXAMPLE.COM/A
+http://user:pass@example.com:8080/a/b?x=y
+http://user@example.com/
+http://[::1]:8080/x
+http://[2001:db8::1]/index.html
+example.com:8080/path
+example.com/path
+//example.com/path
+foo/bar?x=1
+mailto:user@example.com
+http://example.com/a%20b
+http://example.com/%7euser/
+http://example.com/a;b
+http://example.com/a;b?x=1
+http://example.com/path;p=1
+http://example.com/a b
+http://example.com/a|b
+http://example.com/ü
+https://example.com/паth
+http://example.com:99999/
+http://example.com:0/
+http://example.com:abc/
+http://example.com:8080
+https://example.com/?q=a+b&r=c%2Fd
+http://example.com/path#
+http://example.com/#frag with space
+http://example.com/path?x=1&y=2;z=3
+www.example.com/page.html
+./relative/page.html
+http://example.com/😀
+http://example.com/?party=🎉

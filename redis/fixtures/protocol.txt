@@ -1,0 +1,7 @@
+# A server reading from a socket is reading from an attacker.
+#
+# `$1000000000` announces a 1GB bulk string. It must be refused, not
+# allocated: the check has to happen before the buffer grows, and the reply has
+# to say so. The connection is then closed, so this is the last command here.
+
+raw:*3\r\n$3\r\nSET\r\n$1\r\nk\r\n$1000000000\r\n

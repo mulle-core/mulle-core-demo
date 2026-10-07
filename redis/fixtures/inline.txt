@@ -1,0 +1,11 @@
+# The telnet path: `raw:` puts bytes on the wire verbatim, so these are inline
+# commands rather than RESP arrays. Whitespace between arguments is collapsed,
+# and the reply to each is one line.
+#
+#    printf 'PING\r\nGET k\r\n' | nc 127.0.0.1 6379
+
+raw:PING\r\n
+raw:  SET   k   spaced  \r\n
+raw:GET k\r\n
+raw:EXISTS   k   \r\n
+raw:FOO\r\n

@@ -1,0 +1,10 @@
+# RESP carries lengths, so a value may contain CRLF, NULs and anything else.
+# `GET` must return the bytes unchanged, and the reply is what proves it: a
+# reply line that ends early, or a value that comes back shorter, is how this
+# normally goes wrong.
+
+raw:*3\r\n$3\r\nSET\r\n$1\r\nb\r\n$4\r\na\r\nb\r\n
+GET b
+raw:*3\r\n$3\r\nSET\r\n$3\r\nbin\r\n$5\r\n\x00\x01\x02\xff\x7f\r\n
+GET bin
+EXISTS b bin

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  Tell Windows this program's ANSI code page is UTF-8.
+
+  Why it is needed: the C runtime builds `argv` by converting the wide command
+  line to the *ANSI code page* (GetACP(), which is the system locale's, e.g.
+  CP1252). A program that treats argv as UTF-8 -- as these demos do -- therefore
+  receives mojibake for every non-ASCII argument: 'A-umlaut' arrives as the
+  single byte 0xC4 instead of the UTF-8 pair 0xC3 0x84, and a Greek alpha can
+  arrive as 'a'. Nothing in the program can recover the original bytes, because
+  the information was already lost before main() ran.
+
+  With this manifest the process ANSI code page is 65001, so the same conversion
+  produces UTF-8 and argv matches what the shell passed.
+
+  Windows 10 1903 and later. Older systems ignore the setting and behave as
+  before, which is why the demos must not *depend* on it for correctness beyond
+  argument text.
+
+  Note that this is about argv only: file *contents* were never affected, and
+  neither is console output encoding.
+-->
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <application>
+    <windowsSettings>
+      <activeCodePage xmlns="http://schemas.microsoft.com/SMI/2019/WindowsSettings">UTF-8</activeCodePage>
+    </windowsSettings>
+  </application>
+</assembly>

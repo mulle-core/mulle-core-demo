@@ -1,0 +1,12 @@
+/*
+ * Embed utf8-executable.manifest as the process manifest.
+ *
+ * Resource id 1 (CREATEPROCESS_MANIFEST_RESOURCE_ID) is the one the loader
+ * reads for the executable itself as opposed to a DLL, and type 24 is
+ * RT_MANIFEST. The two numbers are spelled out rather than taken from
+ * <windows.h> so this compiles with any windres, including llvm-windres.
+ *
+ * CMake adds this file as a source of a Windows target; see
+ * mulle_demo_utf8_argv() in the top level CMakeLists.txt.
+ */
+1 24 "utf8-executable.manifest"

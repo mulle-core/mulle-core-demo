@@ -1,0 +1,8 @@
+10.0.0.1 - - "GET /index.html HTTP/1.1" 200 12 5
+10.0.0.2 - - "GET /index.html HTTP/1.1" 200 8 7
+10.0.0.3 - - "GET /index.html HTTP/1.1" 200 11 9
+10.0.0.4 - - "POST /submit HTTP/1.1" 404 30 25
+10.0.0.5 - - "GET /missing HTTP/1.1" 500 2 45
+10.0.0.1 - - "GET /index.html HTTP/1.1" 200 12 5
+10.0.0.2 - - "GET /index.html HTTP/1.1" 404 30 33
+10.0.0.3 - - "DELETE /x HTTP/1.1" 500 1 55

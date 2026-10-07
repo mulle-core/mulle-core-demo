@@ -1,0 +1,5 @@
+10.0.0.1 - - [21/Sep/2026:10:00:01 +0200] "GET https://example.com/a%20b?x=1 HTTP/1.1" 200 512
+10.0.0.2 - - [21/Sep/2026:10:00:02 +0200] "GET http://user:pass@example.com:8080/a/b HTTP/1.1" 200 1024
+10.0.0.3 - - [21/Sep/2026:10:00:03 +0200] "GET https://example.com/path;p=1 HTTP/1.1" 404 128
+10.0.0.4 - - [21/Sep/2026:10:00:04 +0200] "GET https://example.com/ü HTTP/1.1" 200 256
+10.0.0.5 - - [21/Sep/2026:10:00:05 +0200] "POST https://example.com/submit HTTP/1.1" 500 64

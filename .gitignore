@@ -1,0 +1,13 @@
+build/
+build-*/
+cmake-build-*/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+.freebuff/
+.opencode/
+bugs/
+opencode.json
+BUILDING.md
