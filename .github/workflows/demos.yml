@@ -47,7 +47,7 @@ jobs:
         build_type: ["", Release]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: nothing is checked out next to this project
         run: |
@@ -84,7 +84,7 @@ jobs:
       LLVM_MINGW_ROOT: ${{ runner.temp }}/llvm-mingw
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: cache llvm-mingw
         id: llvm-mingw
@@ -153,7 +153,7 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # -DMULLE_DEMO_FETCH=OFF is the documented way to ask for checkouts and
       # nothing else. With no checkout and no fetch there is no mulle-core, and
