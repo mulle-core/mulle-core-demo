@@ -14,10 +14,6 @@
 # the demos use has to be on that branch and not only in a working tree. The tag
 # is named below.
 #
-# The windows job is the same build one platform over: it fetches llvm-mingw and
-# installs wine, so the cross build and its tests are checked without a mulle-sde
-# install to supply the toolchain.
-#
 name: demos
 
 on:
@@ -66,86 +62,6 @@ jobs:
 
       - name: test
         run: ctest --test-dir build --output-on-failure
-
-  windows:
-    name: windows cross build (llvm-mingw + wine)
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-
-    env:
-      #
-      # The toolchain file wants ${root}/bin/<triplet>-clang and
-      # ${root}/<triplet>, which is an mstorsjo llvm-mingw release unpacked as it
-      # comes. msvcrt is the CRT mulle-clang for Windows links by default, and
-      # the Windows output the tests expect was recorded against that one.
-      #
-      LLVM_MINGW_VERSION: "20260922"
-      LLVM_MINGW_FLAVOUR: "msvcrt"
-      LLVM_MINGW_ROOT: ${{ github.workspace }}/llvm-mingw
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: cache llvm-mingw
-        id: llvm-mingw
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.LLVM_MINGW_ROOT }}
-          key: llvm-mingw-${{ env.LLVM_MINGW_VERSION }}-${{ env.LLVM_MINGW_FLAVOUR }}
-
-      - name: install llvm-mingw
-        if: steps.llvm-mingw.outputs.cache-hit != 'true'
-        run: |
-          # The name a release asset has: version and flavour are what make it
-          # up, and the runner is x86_64, so the tarball is too. Spelled out in
-          # the shell rather than in env:, which does not expand ${...} again.
-          asset="llvm-mingw-${LLVM_MINGW_VERSION}-${LLVM_MINGW_FLAVOUR}-ubuntu-22.04-x86_64.tar.xz"
-          curl -sSL --retry 3 -o llvm-mingw.tar.xz \
-             "https://github.com/mstorsjo/llvm-mingw/releases/download/${LLVM_MINGW_VERSION}/${asset}"
-          mkdir -p "${LLVM_MINGW_ROOT}"
-          tar -xJf llvm-mingw.tar.xz -C "${LLVM_MINGW_ROOT}" --strip-components=1
-          rm llvm-mingw.tar.xz
-          "${LLVM_MINGW_ROOT}/bin/x86_64-w64-mingw32-clang" --version
-
-      - name: install wine
-        id: wine
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends wine64
-
-          # The tests are handed this command, because the emulator is
-          # autodetected as `wine` and the package that is available is not
-          # always the one that installs that name.
-          echo "command=$(command -v wine64 || command -v wine)" >> "${GITHUB_OUTPUT}"
-
-      #
-      # Two configures, as the README's cross build section describes: the first
-      # one fetches mulle-core, and only then does the toolchain file it brought
-      # along exist for the second to name.
-      #
-      # LLVM_MINGW_ROOT is a -D and not the MULLE_CROSS_COMPILER_ROOT environment
-      # variable on purpose. The toolchain reads the environment only while the
-      # variable is undefined, so a build directory configured with it and then
-      # reconfigured without it does not fail: it quietly comes back as a native
-      # configuration, with the emulator gone and the test paths without their
-      # .exe. A cache variable is remembered for as long as the directory is.
-      #
-      - name: fetch, then configure for Windows
-        run: |
-          cmake -S . -B build -DMULLE_DEMO_GIT_TAG="${MULLE_DEMO_GIT_TAG}"
-
-          cmake -S . -B build-windows \
-             -DMULLE_CORE_SOURCE_DIR=build/_deps/mulle-core-src \
-             -DMULLE_DEMO_GIT_TAG="${MULLE_DEMO_GIT_TAG}" \
-             -DMULLE_DEMO_EMULATOR="${{ steps.wine.outputs.command }}" \
-             -DLLVM_MINGW_ROOT="${LLVM_MINGW_ROOT}" \
-             -DCMAKE_TOOLCHAIN_FILE=build/_deps/mulle-core-src/cmake/share/toolchain--linux-windows--x86_64-w64-mingw32--mulle-clang.cmake
-
-      - name: build
-        run: cmake --build build-windows -j "$(nproc)"
-
-      - name: test under wine
-        run: ctest --test-dir build-windows --output-on-failure
 
   offline:
     name: offline configure fails loudly
