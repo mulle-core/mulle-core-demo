@@ -81,7 +81,7 @@ jobs:
       #
       LLVM_MINGW_VERSION: "20260922"
       LLVM_MINGW_FLAVOUR: "msvcrt"
-      LLVM_MINGW_ROOT: ${{ runner.temp }}/llvm-mingw
+      LLVM_MINGW_ROOT: ${{ github.workspace }}/llvm-mingw
 
     steps:
       - uses: actions/checkout@v4
