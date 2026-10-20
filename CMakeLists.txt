@@ -4,7 +4,7 @@
 #
 cmake_minimum_required(VERSION 3.19...99.99)
 
-project( mulle-core-demo VERSION 0.0.1 LANGUAGES C)
+project( mulle-core-demo VERSION 0.0.2 LANGUAGES C)
 
 #
 # The dependencies are source checkouts, consumed the way a downstream project

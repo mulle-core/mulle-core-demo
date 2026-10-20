@@ -97,13 +97,15 @@ struct hs_latency
 
 
 /*
- * The value for a key. Never 0 (that is EMPTY everywhere) and never INTPTR_MIN,
- * and derived from the key so that a lookup can be *verified* rather than just
- * counted: a slot that returns the wrong pointer is corrupt, not slow.
+ * The value for a key. Never 0 (that is EMPTY everywhere), never INTPTR_MIN,
+ * and even: the hashtable's default value mode seals bit 0, so an odd payload
+ * is rejected with EINVAL. Derived from the key so that a lookup can be
+ * *verified* rather than just counted: a slot that returns the wrong pointer is
+ * corrupt, not slow.
  */
 static void   *hs_value_for( long key)
 {
-   return( (void *) (intptr_t) ((uintptr_t) key * 16 + 1));
+   return( (void *) (intptr_t) ((uintptr_t) key * 16 + 2));
 }
 
 
@@ -405,35 +407,35 @@ static void   hs_dump_replace( const struct hs_options *options)
     * Separate statements throughout: calling a mutator inside the same printf
     * as a read of its effect leaves the order unspecified, and the read can win.
     */
-   rval_int = mulle_concurrent_hashtable_insert( &map, hash, (void *) 0x1);
+   rval_int = mulle_concurrent_hashtable_insert( &map, hash, (void *) 0x10);
    hs_fact( options, "replace.insert_a", "hashtable insert A", hs_rval_name( rval_int));
 
-   rval_int = mulle_concurrent_hashtable_insert( &map, hash, (void *) 0x2);
+   rval_int = mulle_concurrent_hashtable_insert( &map, hash, (void *) 0x20);
    hs_fact( options, "replace.insert_b", "hashtable insert B", hs_rval_name( rval_int));
 
    rval = mulle_concurrent_hashtable_lookup( &map, hash);
    hs_fact( options, "replace.lookup", "hashtable lookup",
-            rval == (void *) 0x1 ? "A (B was refused)" : "not A");
+            rval == (void *) 0x10 ? "A (B was refused)" : "not A");
 
-   rval_int = mulle_concurrent_hashtable_remove( &map, hash, (void *) 0x2);
+   rval_int = mulle_concurrent_hashtable_remove( &map, hash, (void *) 0x20);
    hs_fact( options, "replace.remove_b", "hashtable remove B", hs_rval_name( rval_int));
 
-   rval_int = mulle_concurrent_hashtable_remove( &map, hash, (void *) 0x1);
+   rval_int = mulle_concurrent_hashtable_remove( &map, hash, (void *) 0x10);
    hs_fact( options, "replace.remove_a", "hashtable remove A", hs_rval_name( rval_int));
 
-   rval_int = mulle_concurrent_hashtable_insert( &map, hash, (void *) 0x2);
+   rval_int = mulle_concurrent_hashtable_insert( &map, hash, (void *) 0x20);
    hs_fact( options, "replace.insert_reuse", "hashtable insert B again",
             hs_rval_name( rval_int));
 
    old      = (void *) 0xdead;
-   rval_int = mulle_concurrent_hashtable_register( &map, hash, (void *) 0x3, &old);
+   rval_int = mulle_concurrent_hashtable_register( &map, hash, (void *) 0x30, &old);
    mulle_snprintf( result, sizeof( result), "%s p_old=%s",
              hs_rval_name( rval_int),
-             old == (void *) 0x2 ? "B" : (old == NULL ? "NULL" : "other"));
+             old == (void *) 0x20 ? "B" : (old == NULL ? "NULL" : "other"));
    hs_fact( options, "replace.register_live", "hashtable register C over B", result);
 
    old      = (void *) 0xdead;
-   rval_int = mulle_concurrent_hashtable_register( &map, (intptr_t) 0x400, (void *) 0x4, &old);
+   rval_int = mulle_concurrent_hashtable_register( &map, (intptr_t) 0x400, (void *) 0x40, &old);
    mulle_snprintf( result, sizeof( result), "%s p_old=%s",
              hs_rval_name( rval_int),
              old == NULL ? "NULL" : "other");
@@ -444,11 +446,11 @@ static void   hs_dump_replace( const struct hs_options *options)
             rval == MULLE_CONCURRENT_NO_POINTER ? "NO_POINTER (inserted)" :
             (rval == (void *) MULLE_CONCURRENT_INVALID_POINTER ? "INVALID_POINTER" : "existing"));
 
-   rval = mulle_concurrent_hashmap_register( &hashmap, (intptr_t) 0x800, (void *) 0x9);
+   rval = mulle_concurrent_hashmap_register( &hashmap, (intptr_t) 0x800, (void *) 0xc);
    hs_fact( options, "replace.hashmap_register_again", "hashmap register again",
             rval == (void *) 0x8 ? "the existing value" : "other");
 
-   rval_int = mulle_concurrent_hashmap_insert( &hashmap, (intptr_t) 0x800, (void *) 0x9);
+   rval_int = mulle_concurrent_hashmap_insert( &hashmap, (intptr_t) 0x800, (void *) 0xc);
    hs_fact( options, "replace.hashmap_insert_again", "hashmap insert again",
             hs_rval_name( rval_int));
 
